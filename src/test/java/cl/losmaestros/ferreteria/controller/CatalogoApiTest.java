@@ -10,27 +10,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Pruebas de integración del catálogo: levantan la aplicación completa con H2
- * y los datos iniciales. Cada test se revierte al terminar (@Transactional).
- */
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Transactional
-class CatalogoApiTest {
+/** Pruebas de integración del catálogo público y del CRUD de productos del administrador. */
+class CatalogoApiTest extends ApiTestBase {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private String admin;
+
+    @BeforeEach
+    void iniciarSesion() throws Exception {
+        admin = bearer(ADMIN);
+    }
 
     private static final String NUEVO = """
             {
@@ -95,20 +87,20 @@ class CatalogoApiTest {
 
     @Test
     void cicloCompletoCrearEditarEliminar() throws Exception {
-        mockMvc.perform(post("/api/admin/productos").contentType(MediaType.APPLICATION_JSON).content(NUEVO))
+        mockMvc.perform(post("/api/admin/productos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON).content(NUEVO))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/admin/productos/HE900"))
                 .andExpect(jsonPath("$.precioCompra").value(6000))
                 .andExpect(jsonPath("$.precio").value(8990))
                 .andExpect(jsonPath("$.estadoStock").value("Bajo stock"));
 
-        mockMvc.perform(put("/api/admin/productos/HE900").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put("/api/admin/productos/HE900").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
                         .content(NUEVO.replace("\"stock\": 5", "\"stock\": 50")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stock").value(50))
                 .andExpect(jsonPath("$.estadoStock").value("En stock"));
 
-        mockMvc.perform(delete("/api/admin/productos/HE900"))
+        mockMvc.perform(delete("/api/admin/productos/HE900").header("Authorization", admin))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/productos/HE900"))
@@ -117,7 +109,7 @@ class CatalogoApiTest {
 
     @Test
     void codigoRepetidoResponde409EnElCampoCodigo() throws Exception {
-        mockMvc.perform(post("/api/admin/productos").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/admin/productos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
                         .content(NUEVO.replace("HE900", "MC001")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.campos.codigo").value("Ya existe un producto con este código"));
@@ -131,7 +123,7 @@ class CatalogoApiTest {
                   "stock": -1, "stockMinimo": 10 }
                 """;
 
-        mockMvc.perform(post("/api/admin/productos").contentType(MediaType.APPLICATION_JSON).content(invalido))
+        mockMvc.perform(post("/api/admin/productos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON).content(invalido))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.campos.codigo")
                         .value("Formato inválido: 2 letras mayúsculas y 3 números (ej. MC001)"))
@@ -142,7 +134,7 @@ class CatalogoApiTest {
 
     @Test
     void precioDeVentaBajoElCostoResponde400() throws Exception {
-        mockMvc.perform(post("/api/admin/productos").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/api/admin/productos").header("Authorization", admin).contentType(MediaType.APPLICATION_JSON)
                         .content(NUEVO.replace("\"precioVenta\": 8990", "\"precioVenta\": 5000")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.campos.precioVenta").value("No puede ser menor al precio de compra"));

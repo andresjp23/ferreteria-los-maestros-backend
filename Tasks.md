@@ -96,8 +96,8 @@ Todo bajo `http://localhost:8080/api`.
 
 | Método y ruta | Acceso | Usado por | Prioridad |
 | --- | --- | --- | --- |
-| `POST /auth/login` | público | `AuthProvider.login` | obligatorio |
-| `GET /auth/me` | autenticado | restaurar la sesión al recargar | obligatorio |
+| `POST /auth/login` | público | `AuthProvider.login` | ✅ hecho |
+| `GET /auth/me` | autenticado | restaurar la sesión al recargar | ✅ hecho |
 | `GET /categorias` | público | filtros, inicio, formulario | ✅ hecho |
 | `GET /marcas` | público | filtros, datalist | ✅ hecho |
 | `GET /productos` | público | catálogo, carrito (sin `precioCompra`) | ✅ hecho |
@@ -107,11 +107,11 @@ Todo bajo `http://localhost:8080/api`.
 | `POST /admin/productos` | admin | Agregar producto | ✅ hecho |
 | `PUT /admin/productos/{id}` | admin | Editar producto | ✅ hecho |
 | `DELETE /admin/productos/{id}` | admin | Eliminar producto | ✅ hecho |
-| `GET /usuarios` | admin | tabla de usuarios | obligatorio |
-| `GET /usuarios/{id}` | admin | editar | obligatorio |
-| `POST /usuarios` | admin | Agregar usuario | obligatorio |
-| `PUT /usuarios/{id}` | admin | Editar usuario | obligatorio |
-| `DELETE /usuarios/{id}` | admin | Eliminar/desactivar | obligatorio |
+| `GET /usuarios` | admin | tabla de usuarios | ✅ hecho |
+| `GET /usuarios/{id}` | admin | editar | ✅ hecho |
+| `POST /usuarios` | admin | Agregar usuario | ✅ hecho |
+| `PUT /usuarios/{id}` | admin | Editar usuario | ✅ hecho |
+| `DELETE /usuarios/{id}` | admin | Eliminar | ✅ hecho |
 | `GET /pedidos` | vendedor, admin | panel vendedor, pedidos recientes | obligatorio |
 | `GET /pedidos/{id}` | vendedor, admin | modal de detalle | obligatorio |
 | `PATCH /pedidos/{id}/estado` | vendedor | Cambiar estado / Enviar | obligatorio |
@@ -145,7 +145,7 @@ Todo bajo `http://localhost:8080/api`.
 - [x] Swagger en `/swagger-ui.html` con título y descripción (`OpenApiConfig`).
 - [x] CORS global para `http://localhost:5173` (`CorsConfig`; se mueve a `SecurityConfig` en la sección 6).
 - [x] Quitar el `/api/salud` de la plantilla.
-- [x] Entidades JPA del catálogo (`Categoria`, `Producto`). Faltan las de usuarios y pedidos.
+- [x] Entidades JPA del catálogo (`Categoria`, `Producto`) y de usuarios (`Usuario` con enums `Rol` y `EstadoUsuario`). Faltan las de pedidos.
 - [ ] Entidades JPA con sus restricciones (`@Column(unique, nullable, length)`, relaciones `@ManyToOne` / `@OneToMany`).
 - [x] `DatosIniciales` (`CommandLineRunner`) con `resources/datos/categorias.json` y `productos.json` (generados desde los mocks).
 - [ ] Datos iniciales idempotentes (`CommandLineRunner` que solo inserta si la tabla está vacía) con los mocks completados (sección 0).
@@ -158,7 +158,7 @@ Todo bajo `http://localhost:8080/api`.
 - [ ] `@RestControllerAdvice` con JSON uniforme `{ status, error, mensaje, campos: { campo: "mensaje" } }`. Los nombres de `campos` deben coincidir con los `name` de los formularios (`codigo`, `precioVenta`, `email`…), para pintar el error en el campo correcto.
   - [ ] 400 validación o regla de negocio · 401 sin token o token inválido/expirado · 403 rol no permitido · 404 no existe · 409 duplicado o sin stock.
 - [ ] 201 + cuerpo en POST, 200 en PUT/PATCH, 204 en DELETE.
-- [ ] `@Tag`, `@Operation` y `@ApiResponse` en cada controller; esquema `bearerAuth` en Swagger (botón *Authorize*).
+- [x] `@Tag`, `@Operation` y `@ApiResponse` en cada controller; esquema `bearerAuth` en Swagger (botón *Authorize*).
 
 ## 5. Módulos
 
@@ -176,17 +176,18 @@ Todo bajo `http://localhost:8080/api`.
 - [x] `estadoStock` en la respuesta: `Sin stock` si stock = 0, `Bajo stock` si stock ≤ stockMinimo, `En stock` si no.
 - [x] Semilla: 9 categorías y 76 productos (las imágenes siguen en `frontend/public/products`; `image` guarda la ruta `/products/…`).
 
-### 5.2 Usuarios y autenticación
+### 5.2 Usuarios y autenticación ✅ (2026-11-06)
 
-- [ ] `Usuario`: `id`, `nombre` (3–60, nombre y apellido), `email` (único, en minúsculas, ≤ 80), `passwordHash` (BCrypt), `rol`, `estado`, `ultimoAcceso`, `creadoEn`.
-- [ ] `POST /api/auth/login` `{ email, password }` → `{ token, expiraEn, usuario: { id, nombre, email, rol } }`. Credenciales malas → 401 "Correo o contraseña incorrectos". Usuario inactivo → 401/403 con mensaje. Actualiza `ultimoAcceso`.
-- [ ] `GET /api/auth/me` → `{ id, nombre, email, rol }` del token.
-- [ ] `GET /api/usuarios` → `[{ id, nombre, email, rol, estado, ultimoAcceso }]` (el frontend filtra y pagina en el cliente).
-- [ ] `GET /api/usuarios/{id}` (404).
-- [ ] `POST /api/usuarios` `{ nombre, email, rol, estado, password }`: contraseña de 8–64 caracteres con mayúscula, minúscula y número, sin espacios; 409 en `email` si ya existe → 201.
-- [ ] `PUT /api/usuarios/{id}`: nombre, email, rol, estado y contraseña opcional.
-- [ ] `DELETE /api/usuarios/{id}` → desactivar (`estado=Inactivo`) o borrar si no tiene pedidos. **Regla:** el admin no puede eliminarse, desactivarse ni quitarse el rol a sí mismo (400).
-- [ ] Semilla: los 42 usuarios de `adminUsers.js` (3 admin, 8 vendedores, 32 clientes, 6 inactivos), con las 3 cuentas demo con sus contraseñas actuales.
+- [x] `Usuario`: `id`, `nombre` (3–60, nombre y apellido), `email` (único, en minúsculas, ≤ 80), `passwordHash` (BCrypt), `rol`, `estado`, `ultimoAcceso`, `creadoEn`.
+- [x] `POST /api/auth/login` `{ email, password }` → `{ token, expiraEn, usuario: { id, nombre, email, rol } }`. Credenciales malas → 401 "Correo o contraseña incorrectos". Usuario inactivo → 403 "Tu cuenta está inactiva". Actualiza `ultimoAcceso`.
+- [x] `GET /api/auth/me` → `{ id, nombre, email, rol }` del token.
+- [x] `GET /api/usuarios` → `[{ id, nombre, email, rol, estado, ultimoAcceso }]` (el frontend filtra y pagina en el cliente).
+- [x] `GET /api/usuarios/{id}` (404).
+- [x] `POST /api/usuarios` `{ nombre, email, rol, estado, password }`: contraseña de 8–64 caracteres con mayúscula, minúscula y número, sin espacios; 409 en `email` si ya existe → 201.
+- [x] `PUT /api/usuarios/{id}`: nombre, email, rol, estado y contraseña opcional.
+- [x] `DELETE /api/usuarios/{id}` → borra la cuenta (para desactivarla se edita su estado). **Regla:** el admin no puede eliminarse, desactivarse ni quitarse el rol a sí mismo (400).
+- [ ] Con pedidos: si el usuario tiene pedidos, responder 409 "Tiene pedidos; desactívalo en vez de eliminarlo".
+- [x] Semilla: los 42 usuarios de `adminUsers.js` (3 admin, 8 vendedores, 32 clientes, 6 inactivos), con las 3 cuentas demo con sus contraseñas actuales (`admin123`, `vendedor123`, `cliente123`); el resto usa `Maestros2026`. "Administrador" pasó a llamarse "Administrador General" para cumplir la regla de nombre y apellido.
 
 ### 5.3 Pedidos
 
@@ -208,20 +209,20 @@ Todo bajo `http://localhost:8080/api`.
 - [ ] `POST /api/productos/{id}/imagen` (multipart, JPG/PNG/WEBP ≤ 2 MB, guardado en disco y servido como estático).
 - [ ] `MensajeContacto` + `POST /api/contacto` (público) y `GET /api/contacto` (admin).
 
-## 6. Seguridad JWT y roles (IE3.3.1: hay que hacerlo completo)
+## 6. Seguridad JWT y roles ✅ (IE3.3.1, 2026-11-06)
 
-- [ ] Dependencias: `spring-boot-starter-security` + `jjwt-api/impl/jackson`.
-- [ ] Variables: `JWT_SECRET` (≥ 32 bytes) y `JWT_EXPIRATION_MINUTES` (ej. 60; usar 1–2 para demostrar la expiración en el video).
-- [ ] `JwtService`: genera y valida el token (HS256, `sub` = email, claims `id` y `rol`, `iat`, `exp`).
-- [ ] `JwtAuthFilter` (`OncePerRequestFilter`): lee `Authorization: Bearer …` y carga el `SecurityContext`. Si el token es inválido o expiró → 401 JSON con `mensaje: "Sesión expirada o inválida"`.
-- [ ] `SecurityConfig`: `STATELESS`, CSRF desactivado, CORS desde la configuración, `BCryptPasswordEncoder`, `AuthenticationEntryPoint` (401) y `AccessDeniedHandler` (403) con el formato de error uniforme.
-- [ ] Reglas:
-  - [ ] Público: `POST /api/auth/login`, `GET /api/productos/**`, `GET /api/categorias`, `GET /api/marcas`, `GET /api/unidades`, Swagger (`/swagger-ui/**`, `/v3/api-docs/**`), `POST /api/contacto`.
-  - [ ] Autenticado: `GET /api/auth/me`.
-  - [ ] cliente: `POST /api/pedidos`, `GET /api/pedidos/mios`.
+- [x] Dependencias: `spring-boot-starter-security` + `jjwt` 0.12.6. Se excluye `UserDetailsServiceAutoConfiguration` (no hay usuario en memoria).
+- [x] Variables: `JWT_SECRET` (≥ 32 bytes) y `JWT_EXPIRATION_MINUTES` (ej. 60; usar 1–2 para demostrar la expiración en el video).
+- [x] `JwtService`: genera y valida el token (HS256, `sub` = id, claims `email` y `rol`, `iat`, `exp`).
+- [x] `JwtAuthFilter` (`OncePerRequestFilter`): lee `Authorization: Bearer …` y carga el `SecurityContext`. Lee el usuario de la BD en cada petición (si lo desactivan, pierde el acceso al tiro). Si el token es inválido o venció, la petición sigue como anónima: en rutas públicas no pasa nada y en las protegidas responde 401 con el motivo ("Tu sesión expiró…", "Sesión inválida…").
+- [x] `SecurityConfig`: `STATELESS`, CSRF desactivado, CORS desde la configuración, `BCryptPasswordEncoder`, `AuthenticationEntryPoint` (401) y `AccessDeniedHandler` (403) con el formato de error uniforme.
+- [x] Reglas:
+  - [x] Público: `POST /api/auth/login`, `GET /api/productos/**`, `GET /api/categorias`, `GET /api/marcas`, `GET /api/unidades`, Swagger (`/swagger-ui/**`, `/v3/api-docs/**`), `POST /api/contacto`.
+  - [x] Autenticado: `GET /api/auth/me`.
+  - [ ] cliente: `POST /api/pedidos`, `GET /api/pedidos/mios` (cuando existan los pedidos).
   - [ ] vendedor o admin: `GET /api/pedidos/**`; solo vendedor: `PATCH /api/pedidos/*/estado`.
-  - [ ] admin: `/api/admin/**` (incluye productos y resumen), `/api/usuarios/**`, `GET /api/contacto`.
-- [ ] Probar y dejar evidencia: sin token → 401, cliente en `/api/usuarios` → 403, vendedor en `POST /api/admin/productos` → 403, token expirado → 401.
+  - [x] admin: `/api/admin/**` (incluye productos y resumen) y `/api/usuarios/**`.
+- [x] Probado en `AuthApiTest` y `AutorizacionApiTest`: sin token → 401, cliente en `/api/usuarios` → 403, vendedor en `POST /api/admin/productos` → 403, token expirado → 401.
 
 ## 7. Cambios en el frontend
 

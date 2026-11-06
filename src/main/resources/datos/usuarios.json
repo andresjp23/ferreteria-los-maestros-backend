@@ -1,0 +1,338 @@
+[
+  {
+    "nombre": "Administrador General",
+    "email": "admin@losmaestros.cl",
+    "rol": "admin",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-18T01:35",
+    "password": "admin123"
+  },
+  {
+    "nombre": "Pedro Soto",
+    "email": "vendedor@losmaestros.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-17T16:48",
+    "password": "vendedor123"
+  },
+  {
+    "nombre": "Camila Rojas",
+    "email": "cliente@losmaestros.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-16T21:01",
+    "password": "cliente123"
+  },
+  {
+    "nombre": "Javiera Fuentes",
+    "email": "javiera.fuentes@ejemplo.cl",
+    "rol": "admin",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-16T11:24",
+    "password": null
+  },
+  {
+    "nombre": "María González",
+    "email": "maria.gonzalez@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-16T02:37",
+    "password": null
+  },
+  {
+    "nombre": "Carlos Torres",
+    "email": "carlos.torres@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-15T06:50",
+    "password": null
+  },
+  {
+    "nombre": "Felipe Torres",
+    "email": "felipe.torres@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-14T22:03",
+    "password": null
+  },
+  {
+    "nombre": "Ricardo Peña",
+    "email": "ricardo.pena@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-14T12:26",
+    "password": null
+  },
+  {
+    "nombre": "Constanza Vidal",
+    "email": "constanza.vidal@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-13T16:39",
+    "password": null
+  },
+  {
+    "nombre": "Matías Herrera",
+    "email": "matias.herrera@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-13T07:52",
+    "password": null
+  },
+  {
+    "nombre": "Daniela Castro",
+    "email": "daniela.castro@ejemplo.cl",
+    "rol": "vendedor",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-12T23:05",
+    "password": null
+  },
+  {
+    "nombre": "Valentina Muñoz",
+    "email": "valentina.munoz@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-12T02:28",
+    "password": null
+  },
+  {
+    "nombre": "Diego Silva",
+    "email": "diego.silva@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-07-30T17:41",
+    "password": null
+  },
+  {
+    "nombre": "Lucía Pérez",
+    "email": "lucia.perez@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-10T21:54",
+    "password": null
+  },
+  {
+    "nombre": "Sebastián Araya",
+    "email": "sebastian.araya@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-10T13:07",
+    "password": null
+  },
+  {
+    "nombre": "Francisca Núñez",
+    "email": "francisca.nunez@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-10T03:30",
+    "password": null
+  },
+  {
+    "nombre": "Joaquín Contreras",
+    "email": "joaquin.contreras@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-09T07:43",
+    "password": null
+  },
+  {
+    "nombre": "Ignacio Reyes",
+    "email": "ignacio.reyes@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-08T22:56",
+    "password": null
+  },
+  {
+    "nombre": "Fernanda Mora",
+    "email": "fernanda.mora@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-08T14:09",
+    "password": null
+  },
+  {
+    "nombre": "Tomás Salazar",
+    "email": "tomas.salazar@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-07T17:32",
+    "password": null
+  },
+  {
+    "nombre": "Antonia Vega",
+    "email": "antonia.vega@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-07T08:45",
+    "password": null
+  },
+  {
+    "nombre": "Benjamín Rivera",
+    "email": "benjamin.rivera@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-06T23:58",
+    "password": null
+  },
+  {
+    "nombre": "Isidora Campos",
+    "email": "isidora.campos@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-07-15T04:11",
+    "password": null
+  },
+  {
+    "nombre": "Vicente Espinoza",
+    "email": "vicente.espinoza@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-05T18:34",
+    "password": null
+  },
+  {
+    "nombre": "Martina Gutiérrez",
+    "email": "martina.gutierrez@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-04T22:47",
+    "password": null
+  },
+  {
+    "nombre": "Cristóbal Tapia",
+    "email": "cristobal.tapia@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-04T14:00",
+    "password": null
+  },
+  {
+    "nombre": "Paulina Ortiz",
+    "email": "paulina.ortiz@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-04T04:23",
+    "password": null
+  },
+  {
+    "nombre": "Nicolás Sepúlveda",
+    "email": "nicolas.sepulveda@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-03T08:36",
+    "password": null
+  },
+  {
+    "nombre": "Camilo Bravo",
+    "email": "camilo.bravo@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-02T23:49",
+    "password": null
+  },
+  {
+    "nombre": "Alejandra Pizarro",
+    "email": "alejandra.pizarro@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-02T15:02",
+    "password": null
+  },
+  {
+    "nombre": "Rodrigo Molina",
+    "email": "rodrigo.molina@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-01T18:25",
+    "password": null
+  },
+  {
+    "nombre": "Karina Lagos",
+    "email": "karina.lagos@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-07-01T09:38",
+    "password": null
+  },
+  {
+    "nombre": "Gonzalo Cárdenas",
+    "email": "gonzalo.cardenas@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-10-01T00:51",
+    "password": null
+  },
+  {
+    "nombre": "Marcela Figueroa",
+    "email": "marcela.figueroa@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-09-30T05:04",
+    "password": null
+  },
+  {
+    "nombre": "Patricio Navarro",
+    "email": "patricio.navarro@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-09-29T19:27",
+    "password": null
+  },
+  {
+    "nombre": "Soledad Riquelme",
+    "email": "soledad.riquelme@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-06-24T23:40",
+    "password": null
+  },
+  {
+    "nombre": "Esteban Maldonado",
+    "email": "esteban.maldonado@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-09-28T14:53",
+    "password": null
+  },
+  {
+    "nombre": "Natalia Carrasco",
+    "email": "natalia.carrasco@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-09-28T06:06",
+    "password": null
+  },
+  {
+    "nombre": "Héctor Valdés",
+    "email": "hector.valdes@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-06-20T09:29",
+    "password": null
+  },
+  {
+    "nombre": "Bárbara Escobar",
+    "email": "barbara.escobar@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": "2026-09-27T00:42",
+    "password": null
+  },
+  {
+    "nombre": "Mauricio Leiva",
+    "email": "mauricio.leiva@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Inactivo",
+    "ultimoAcceso": "2026-06-17T15:55",
+    "password": null
+  },
+  {
+    "nombre": "Pamela Zúñiga",
+    "email": "pamela.zuniga@ejemplo.cl",
+    "rol": "cliente",
+    "estado": "Activo",
+    "ultimoAcceso": null,
+    "password": null
+  }
+]

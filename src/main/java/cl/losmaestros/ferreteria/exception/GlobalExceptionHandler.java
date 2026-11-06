@@ -1,12 +1,15 @@
 package cl.losmaestros.ferreteria.exception;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,13 +23,35 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /** Bean Validation (@NotBlank, @Size...): un mensaje por campo, el primero que falle. */
+    /**
+     * Orden en que se informan las reglas de un mismo campo, igual que en el frontend:
+     * primero "obligatorio", después el largo y al final el formato.
+     */
+    private static final List<String> PRIORIDAD = List.of("NotBlank", "NotNull", "Size", "Min", "Max");
+
+    /** Bean Validation (@NotBlank, @Size...): un mensaje por campo, el de mayor prioridad. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validacion(MethodArgumentNotValidException ex) {
         Map<String, String> campos = new LinkedHashMap<>();
-        ex.getBindingResult().getFieldErrors()
+        ex.getBindingResult().getFieldErrors().stream()
+                .sorted(Comparator.comparingInt(GlobalExceptionHandler::prioridad))
                 .forEach(error -> campos.putIfAbsent(error.getField(), error.getDefaultMessage()));
         return respuesta(HttpStatus.BAD_REQUEST, "Revisa los datos ingresados", campos);
+    }
+
+    private static int prioridad(FieldError error) {
+        int indice = PRIORIDAD.indexOf(error.getCode());
+        return indice >= 0 ? indice : PRIORIDAD.size();
+    }
+
+    @ExceptionHandler(NoAutorizadoException.class)
+    public ResponseEntity<ErrorResponse> noAutorizado(NoAutorizadoException ex) {
+        return respuesta(HttpStatus.UNAUTHORIZED, ex.getMessage(), Map.of());
+    }
+
+    @ExceptionHandler(AccesoDenegadoException.class)
+    public ResponseEntity<ErrorResponse> accesoDenegado(AccesoDenegadoException ex) {
+        return respuesta(HttpStatus.FORBIDDEN, ex.getMessage(), Map.of());
     }
 
     @ExceptionHandler(ReglaNegocioException.class)
