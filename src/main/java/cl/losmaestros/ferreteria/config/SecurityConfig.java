@@ -51,6 +51,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos/**", "/api/categorias", "/api/marcas",
                                 "/api/unidades").permitAll()
 
+                        // Pedidos: el cliente compra y ve los suyos; el vendedor gestiona; el admin consulta
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado").hasRole("VENDEDOR")
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos", "/api/pedidos/*")
+                                .hasAnyRole("VENDEDOR", "ADMIN")
+
                         // Solo administrador
                         .requestMatchers("/api/admin/**", "/api/usuarios/**").hasRole("ADMIN")
 

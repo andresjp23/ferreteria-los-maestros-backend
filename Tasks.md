@@ -112,12 +112,12 @@ Todo bajo `http://localhost:8080/api`.
 | `POST /usuarios` | admin | Agregar usuario | ✅ hecho |
 | `PUT /usuarios/{id}` | admin | Editar usuario | ✅ hecho |
 | `DELETE /usuarios/{id}` | admin | Eliminar | ✅ hecho |
-| `GET /pedidos` | vendedor, admin | panel vendedor, pedidos recientes | obligatorio |
-| `GET /pedidos/{id}` | vendedor, admin | modal de detalle | obligatorio |
-| `PATCH /pedidos/{id}/estado` | vendedor | Cambiar estado / Enviar | obligatorio |
-| `POST /pedidos` | cliente | checkout del carrito | recomendado (da sentido al rol cliente y es la mejor regla de negocio) |
-| `GET /admin/resumen` | admin | indicadores del dashboard | recomendado |
-| `GET /pedidos/mios` | cliente | "Mis pedidos" (pantalla nueva) | mejora |
+| `GET /pedidos` (`?limit=`) | vendedor, admin | panel vendedor, pedidos recientes | ✅ hecho |
+| `GET /pedidos/{id}` | vendedor, admin | modal de detalle | ✅ hecho |
+| `PATCH /pedidos/{id}/estado` | vendedor | Cambiar estado / Enviar | ✅ hecho |
+| `POST /pedidos` | cliente | checkout del carrito | ✅ hecho |
+| `GET /admin/resumen` | admin | indicadores del dashboard | ✅ hecho |
+| `GET /pedidos/mios` | cliente | "Mis pedidos" (pantalla nueva, opcional en el frontend) | ✅ hecho |
 | `POST /productos/{id}/imagen` | admin | campo imagen del formulario | mejora |
 | `POST /contacto` · `GET /contacto` | público · admin | formulario de contacto | mejora |
 
@@ -145,7 +145,7 @@ Todo bajo `http://localhost:8080/api`.
 - [x] Swagger en `/swagger-ui.html` con título y descripción (`OpenApiConfig`).
 - [x] CORS global para `http://localhost:5173` (`CorsConfig`; se mueve a `SecurityConfig` en la sección 6).
 - [x] Quitar el `/api/salud` de la plantilla.
-- [x] Entidades JPA del catálogo (`Categoria`, `Producto`) y de usuarios (`Usuario` con enums `Rol` y `EstadoUsuario`). Faltan las de pedidos.
+- [x] Entidades JPA: `Categoria`, `Producto`, `Usuario` (enums `Rol`, `EstadoUsuario`), `Pedido` y `DetallePedido` (enum `EstadoPedido`).
 - [ ] Entidades JPA con sus restricciones (`@Column(unique, nullable, length)`, relaciones `@ManyToOne` / `@OneToMany`).
 - [x] `DatosIniciales` (`CommandLineRunner`) con `resources/datos/categorias.json` y `productos.json` (generados desde los mocks).
 - [ ] Datos iniciales idempotentes (`CommandLineRunner` que solo inserta si la tabla está vacía) con los mocks completados (sección 0).
@@ -186,22 +186,22 @@ Todo bajo `http://localhost:8080/api`.
 - [x] `POST /api/usuarios` `{ nombre, email, rol, estado, password }`: contraseña de 8–64 caracteres con mayúscula, minúscula y número, sin espacios; 409 en `email` si ya existe → 201.
 - [x] `PUT /api/usuarios/{id}`: nombre, email, rol, estado y contraseña opcional.
 - [x] `DELETE /api/usuarios/{id}` → borra la cuenta (para desactivarla se edita su estado). **Regla:** el admin no puede eliminarse, desactivarse ni quitarse el rol a sí mismo (400).
-- [ ] Con pedidos: si el usuario tiene pedidos, responder 409 "Tiene pedidos; desactívalo en vez de eliminarlo".
+- [x] Si el usuario tiene pedidos → 409 "El usuario tiene pedidos. Desactívalo en vez de eliminarlo".
 - [x] Semilla: los 42 usuarios de `adminUsers.js` (3 admin, 8 vendedores, 32 clientes, 6 inactivos), con las 3 cuentas demo con sus contraseñas actuales (`admin123`, `vendedor123`, `cliente123`); el resto usa `Maestros2026`. "Administrador" pasó a llamarse "Administrador General" para cumplir la regla de nombre y apellido.
 
-### 5.3 Pedidos
+### 5.3 Pedidos ✅ (2026-11-06)
 
-- [ ] `Pedido`: `id`, `cliente` (FK `Usuario`), `fecha`, `estado`, `total`.
-- [ ] `DetallePedido`: `pedido`, `producto` (FK), `nombreProducto` y `precioUnitario` copiados al comprar, `cantidad`, `subtotal`.
-- [ ] `GET /api/pedidos` (vendedor/admin), ordenado por fecha descendente; `?limit=5` para `RecentOrders`. Respuesta con `id`, `cliente`, `fechaISO`, `estado`, `total` y `productos` (nombres), que es lo que ya pintan `OrdersTable` y `filterOrders`.
-- [ ] `GET /api/pedidos/{id}` con `detalle`.
-- [ ] `PATCH /api/pedidos/{id}/estado` `{ estado }` (vendedor). **Regla:** solo avanzar En preparación → Enviado → Entregado; cualquier otro cambio → 400. El select del modal debe mostrar solo el estado actual y el siguiente.
-- [ ] **Checkout** `POST /api/pedidos` (cliente) `{ items: [{ id, cantidad }] }`, en una transacción (`@Transactional`): busca precio y stock en la BD (no confía en el frontend), 409 si no alcanza el stock (indicando qué producto), descuenta stock, calcula el total y responde 201 con el pedido.
-- [ ] Semilla: unos 15 pedidos en distintos estados y fechas (últimos 90 días) con clientes y productos reales, para que funcionen los filtros de 7/30/90 días.
+- [x] `Pedido`: `id`, `cliente` (FK `Usuario`), `fecha`, `estado`, `total` (long, calculado con las líneas).
+- [x] `DetallePedido`: `pedido`, `producto` (FK), `nombreProducto` y `precioUnitario` copiados al comprar, `cantidad`, `subtotal`.
+- [x] `GET /api/pedidos` (vendedor/admin), ordenado por fecha descendente; `?limit=5` para `RecentOrders`. Respuesta con `id`, `cliente`, `fechaISO`, `estado`, `total` y `productos` (nombres), que es lo que ya pintan `OrdersTable` y `filterOrders`.
+- [x] `GET /api/pedidos/{id}` con `detalle`.
+- [x] `PATCH /api/pedidos/{id}/estado` `{ estado }` (vendedor). **Regla:** solo avanzar En preparación → Enviado → Entregado; cualquier otro cambio → 400. En el frontend, el select del modal debe mostrar solo el estado actual y el siguiente.
+- [x] **Checkout** `POST /api/pedidos` (cliente) `{ items: [{ id, cantidad }] }`, en una transacción (`@Transactional`): bloquea las filas de los productos (`SELECT … FOR UPDATE`), busca precio y stock en la BD (no confía en el frontend), junta productos repetidos, 409 si un producto no existe o no alcanza el stock (indicando cuál), descuenta stock, calcula el total y responde 201 con el pedido.
+- [x] Semilla: 15 pedidos (`datos/pedidos.json`) con fechas relativas a hoy (`diasAtras`), clientes y productos reales; 2 son del cliente demo.
 
-### 5.4 Dashboard admin
+### 5.4 Dashboard admin ✅ (2026-11-06)
 
-- [ ] `GET /api/admin/resumen` → `{ productos, productosBajoStock, usuarios, pedidosMes, ventasMes, variacionPedidos, variacionVentas }` (mes actual vs mes anterior). Reemplaza los números inventados.
+- [x] `GET /api/admin/resumen` → `{ productos, productosBajoStock, usuarios, pedidosMes, ventasMes, variacionPedidos, variacionVentas }` (mes actual vs mes anterior). Reemplaza los números inventados.
 
 ### 5.5 Mejoras (solo si sobra tiempo)
 
@@ -219,8 +219,8 @@ Todo bajo `http://localhost:8080/api`.
 - [x] Reglas:
   - [x] Público: `POST /api/auth/login`, `GET /api/productos/**`, `GET /api/categorias`, `GET /api/marcas`, `GET /api/unidades`, Swagger (`/swagger-ui/**`, `/v3/api-docs/**`), `POST /api/contacto`.
   - [x] Autenticado: `GET /api/auth/me`.
-  - [ ] cliente: `POST /api/pedidos`, `GET /api/pedidos/mios` (cuando existan los pedidos).
-  - [ ] vendedor o admin: `GET /api/pedidos/**`; solo vendedor: `PATCH /api/pedidos/*/estado`.
+  - [x] cliente: `POST /api/pedidos`, `GET /api/pedidos/mios`.
+  - [x] vendedor o admin: `GET /api/pedidos` y `/api/pedidos/{id}`; solo vendedor: `PATCH /api/pedidos/*/estado`.
   - [x] admin: `/api/admin/**` (incluye productos y resumen) y `/api/usuarios/**`.
 - [x] Probado en `AuthApiTest` y `AutorizacionApiTest`: sin token → 401, cliente en `/api/usuarios` → 403, vendedor en `POST /api/admin/productos` → 403, token expirado → 401.
 

@@ -22,7 +22,7 @@ docker compose up -d          # levanta MySQL con la BD "ferreteria"
 - Swagger: <http://localhost:8080/swagger-ui.html>
 - API: `http://localhost:8080/api/...` (endpoints en Swagger y en `Tasks.md`)
 
-En la primera ejecución el backend crea las tablas y carga los datos de demostración (9 categorías, 76 productos y 42 usuarios). Espera el mensaje `Datos iniciales: 42 usuarios` en la consola antes de iniciar sesión. Para partir de cero: `docker compose down -v && docker compose up -d`.
+En la primera ejecución el backend crea las tablas y carga los datos de demostración (9 categorías, 76 productos, 42 usuarios y 15 pedidos). Espera el mensaje `Datos iniciales: 42 usuarios` en la consola antes de iniciar sesión. Para partir de cero: `docker compose down -v && docker compose up -d`.
 
 ## Cuentas de demostración
 
@@ -44,7 +44,9 @@ Las demás cuentas de ejemplo usan la contraseña `Maestros2026`.
 | --- | --- |
 | Público | `POST /api/auth/login`, `GET /api/productos/**`, `/api/categorias`, `/api/marcas`, `/api/unidades`, Swagger |
 | Con sesión | `GET /api/auth/me` |
-| Administrador | `/api/admin/**`, `/api/usuarios/**` |
+| Cliente | `POST /api/pedidos` (checkout), `GET /api/pedidos/mios` |
+| Vendedor | `GET /api/pedidos`, `GET /api/pedidos/{id}`, `PATCH /api/pedidos/{id}/estado` |
+| Administrador | `/api/admin/**` (productos y resumen), `/api/usuarios/**`, `GET /api/pedidos` |
 
 
 Con XAMPP: crear la base `ferreteria` y un usuario, y poner esos datos en `DB_URL`, `DB_USER` y `DB_PASSWORD` dentro de `.env`.

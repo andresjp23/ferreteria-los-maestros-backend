@@ -1,0 +1,230 @@
+[
+  {
+    "cliente": "cristobal.tapia@ejemplo.cl",
+    "diasAtras": 79,
+    "hora": "16:05",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "EL007",
+        "cantidad": 3
+      },
+      {
+        "codigo": "MC003",
+        "cantidad": 2
+      },
+      {
+        "codigo": "MD001",
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "cliente": "antonia.vega@ejemplo.cl",
+    "diasAtras": 58,
+    "hora": "13:56",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "MC009",
+        "cantidad": 3
+      },
+      {
+        "codigo": "MC008",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "sebastian.araya@ejemplo.cl",
+    "diasAtras": 44,
+    "hora": "10:05",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "JA003",
+        "cantidad": 3
+      },
+      {
+        "codigo": "EL003",
+        "cantidad": 4
+      },
+      {
+        "codigo": "EL006",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "cliente@losmaestros.cl",
+    "diasAtras": 35,
+    "hora": "09:56",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "MD004",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "sebastian.araya@ejemplo.cl",
+    "diasAtras": 27,
+    "hora": "11:24",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "MD007",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "gonzalo.cardenas@ejemplo.cl",
+    "diasAtras": 21,
+    "hora": "13:48",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "SE002",
+        "cantidad": 3
+      },
+      {
+        "codigo": "MD005",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "gonzalo.cardenas@ejemplo.cl",
+    "diasAtras": 16,
+    "hora": "12:05",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "EL009",
+        "cantidad": 2
+      },
+      {
+        "codigo": "EL001",
+        "cantidad": 2
+      }
+    ]
+  },
+  {
+    "cliente": "rodrigo.molina@ejemplo.cl",
+    "diasAtras": 12,
+    "hora": "14:32",
+    "estado": "Entregado",
+    "items": [
+      {
+        "codigo": "MC009",
+        "cantidad": 2
+      },
+      {
+        "codigo": "JA002",
+        "cantidad": 4
+      },
+      {
+        "codigo": "MC008",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "ignacio.reyes@ejemplo.cl",
+    "diasAtras": 9,
+    "hora": "14:05",
+    "estado": "Enviado",
+    "items": [
+      {
+        "codigo": "JA004",
+        "cantidad": 2
+      }
+    ]
+  },
+  {
+    "cliente": "benjamin.rivera@ejemplo.cl",
+    "diasAtras": 6,
+    "hora": "17:56",
+    "estado": "En preparación",
+    "items": [
+      {
+        "codigo": "HM006",
+        "cantidad": 1
+      },
+      {
+        "codigo": "SE004",
+        "cantidad": 3
+      }
+    ]
+  },
+  {
+    "cliente": "cristobal.tapia@ejemplo.cl",
+    "diasAtras": 5,
+    "hora": "17:17",
+    "estado": "Enviado",
+    "items": [
+      {
+        "codigo": "HE006",
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "cliente": "francisca.nunez@ejemplo.cl",
+    "diasAtras": 3,
+    "hora": "18:48",
+    "estado": "Enviado",
+    "items": [
+      {
+        "codigo": "JA004",
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "cliente": "cliente@losmaestros.cl",
+    "diasAtras": 2,
+    "hora": "09:48",
+    "estado": "En preparación",
+    "items": [
+      {
+        "codigo": "MC009",
+        "cantidad": 1
+      },
+      {
+        "codigo": "GS002",
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "cliente": "francisca.nunez@ejemplo.cl",
+    "diasAtras": 1,
+    "hora": "10:32",
+    "estado": "En preparación",
+    "items": [
+      {
+        "codigo": "JA004",
+        "cantidad": 2
+      },
+      {
+        "codigo": "MC008",
+        "cantidad": 1
+      }
+    ]
+  },
+  {
+    "cliente": "vicente.espinoza@ejemplo.cl",
+    "diasAtras": 0,
+    "hora": "10:48",
+    "estado": "En preparación",
+    "items": [
+      {
+        "codigo": "EL013",
+        "cantidad": 1
+      }
+    ]
+  }
+]

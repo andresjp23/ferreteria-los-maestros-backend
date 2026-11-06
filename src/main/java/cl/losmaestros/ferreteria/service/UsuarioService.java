@@ -8,6 +8,7 @@ import cl.losmaestros.ferreteria.exception.ReglaNegocioException;
 import cl.losmaestros.ferreteria.model.EstadoUsuario;
 import cl.losmaestros.ferreteria.model.Rol;
 import cl.losmaestros.ferreteria.model.Usuario;
+import cl.losmaestros.ferreteria.repository.PedidoRepository;
 import cl.losmaestros.ferreteria.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Locale;
@@ -21,10 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PedidoRepository pedidoRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PedidoRepository pedidoRepository,
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.pedidoRepository = pedidoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -83,12 +87,17 @@ public class UsuarioService {
         return UsuarioResponse.from(usuario);
     }
 
+    /** Borra la cuenta. Si tiene pedidos no se puede (se perdería el historial): hay que desactivarla. */
     @Transactional
     public void eliminar(Long id, Long idActual) {
         if (id.equals(idActual)) {
             throw new ReglaNegocioException(null, "No puedes eliminar tu propia cuenta");
         }
-        usuarioRepository.delete(buscar(id));
+        Usuario usuario = buscar(id);
+        if (pedidoRepository.existsByClienteId(id)) {
+            throw new ConflictoException(null, "El usuario tiene pedidos. Desactívalo en vez de eliminarlo");
+        }
+        usuarioRepository.delete(usuario);
     }
 
     // ---------- Apoyo ----------
