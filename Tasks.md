@@ -231,7 +231,7 @@ Todo bajo `http://localhost:8080/api`.
 - [x] `frontend/.env.development` con `VITE_API_URL=http://localhost:8080/api` + `.env.example`.
 - [x] `src/services/api.js`: URL base, JSON, `Authorization: Bearer`, error con `{ status, mensaje, campos }`, y ante un 401 con sesión → `logout` + aviso "Tu sesión expiró".
 - [x] `authService`, `catalogService` y `orderService` (checkout).
-- [ ] `adminService` / `userService` y el resto de `orderService` para los paneles (parte 2).
+- [x] `adminService`, `userService` y el resto de `orderService` para los paneles.
 - [x] Estados de carga y error en cada pantalla (`PageLoader`, `Notice`).
 
 ### 7.2 Sesión y acceso (IE3.3.2 + IE3.3.3) ✅
@@ -242,7 +242,7 @@ Todo bajo `http://localhost:8080/api`.
 - [x] Token vencido: revisar `exp` al cargar y responder al 401 del backend → `/login` con el mensaje "Tu sesión expiró, vuelve a iniciar sesión" y la ruta de retorno guardada.
 - [x] `logout` borra el token.
 - [x] Checkout solo para clientes (admin y vendedor ven el botón deshabilitado con la explicación; sin sesión, lleva al login y vuelve al carrito).
-- [ ] Acciones de admin y del vendedor dentro de sus paneles (parte 2).
+- [x] Acciones por rol en los paneles: el admin no puede eliminar su cuenta (botón deshabilitado), el vendedor solo ve "Cambiar a" el estado siguiente y no puede editar pedidos entregados.
 - [x] `LoginForm`: reemplazar la lista generada desde `users.js` por las 3 cuentas demo escritas en el componente o en el README.
 - [x] Borrar `mocks/users.js`.
 
@@ -251,31 +251,33 @@ Todo bajo `http://localhost:8080/api`.
 - [x] `CatalogProvider` + `useCatalog`: pide productos, categorías y marcas una vez; lo usan `Products`, `ProductDetail`, `CategoriesSection`, `FiltersSidebar` y `CartProvider`. `utils/catalog.js` queda solo para el admin hasta la parte 2.
 - [x] `FiltersSidebar`: categorías y marcas del API.
 - [x] `ProductDetail`: 404 → "Producto no encontrado"; relacionados desde el catálogo cargado.
-- [ ] `utils/stock.js`: usar `estadoStock` del backend (lo usa la tabla del admin, parte 2).
+- [x] `utils/stock.js`: se usa `estadoStock` del backend; solo quedan las opciones del filtro.
 - [x] `CartSummary`: habilitar "Continuar con la compra" → si no hay sesión de cliente, ir a `/login`; si la hay, `POST /pedidos` → vaciar el carrito → confirmación con el n° de pedido; mostrar el 409 de stock.
 
-### 7.4 Panel admin
+### 7.4 Panel admin ✅
 
-- [ ] Dashboard: `GET /admin/resumen`; quitar los valores fijos y las tendencias inventadas.
-- [ ] `RecentOrders`: `GET /pedidos?limit=5`.
-- [ ] Productos: tabla desde `GET /admin/productos`; Agregar → `POST /admin/productos`; **Editar** (abre `AddProductForm` con los datos, el código bloqueado) → `PUT`; **Eliminar** (confirmación) → `DELETE`; refrescar la lista y mostrar los errores 400/409 por campo.
-- [ ] `AddProductForm`: categorías, marcas y unidades del API. Si no se sube imagen, el producto queda con `image: null` → mostrar una imagen por defecto en `ProductCard` y en el detalle.
-- [ ] Usuarios: tabla desde el API; Agregar → `POST` con la contraseña; **Editar** (contraseña opcional) → `PUT`; **Eliminar/Desactivar** → `DELETE`.
-- [ ] `productValidation.js` / `userValidations.js`: quitar la unicidad contra los mocks (la valida el backend con 409).
-- [ ] Borrar `mocks/products.js`, `categories.js`, `brands.js` y `adminUsers.js`.
+- [x] Dashboard: `GET /admin/resumen`; quitar los valores fijos y las tendencias inventadas.
+- [x] `RecentOrders`: `GET /pedidos?limit=5`.
+- [x] Productos: tabla desde `GET /admin/productos`; Agregar → `POST /admin/productos`; **Editar** (abre `AddProductForm` con los datos, el código bloqueado) → `PUT`; **Eliminar** (confirmación) → `DELETE`; refrescar la lista y mostrar los errores 400/409 por campo.
+- [x] `ProductForm`: categorías, marcas y unidades del API. La imagen pasó a ser una ruta o URL (el backend no recibe archivos).
+- [ ] Imagen por defecto en `ProductCard` y en el detalle cuando un producto no tiene imagen (hoy queda el recuadro vacío).
+- [x] Usuarios: tabla desde el API; Agregar → `POST` con la contraseña; **Editar** (contraseña opcional) → `PUT`; **Eliminar/Desactivar** → `DELETE`.
+- [x] `productValidation.js` / `userValidations.js`: quitar la unicidad contra los mocks (la valida el backend con 409).
+- [x] Borrar `mocks/products.js`, `categories.js`, `brands.js` y `adminUsers.js`.
 
-### 7.5 Panel vendedor
+### 7.5 Panel vendedor ✅
 
-- [ ] `Orders.jsx`: `GET /pedidos`; el modal de detalle usa `GET /pedidos/{id}`.
-- [ ] `updateStatus` y `markAsSent` → `PATCH /pedidos/{id}/estado`; actualizar con la respuesta y mostrar el 400.
-- [ ] Mostrar la fecha con `formatDateTime(fechaISO)` (el campo `fecha` ya formateado deja de existir).
-- [ ] Borrar `mocks/orders.js`.
+- [x] `Orders.jsx`: `GET /pedidos` (ya trae el detalle de cada pedido, así que el modal no hace otra petición).
+- [x] `updateStatus` y `markAsSent` → `PATCH /pedidos/{id}/estado`; actualizar con la respuesta y mostrar el 400.
+- [x] Mostrar la fecha con `formatDateTime(fechaISO)` (el campo `fecha` ya formateado deja de existir).
+- [x] Borrar `mocks/orders.js`.
 
-### 7.6 Tests del frontend
+### 7.6 Tests del frontend ✅ (40 tests)
 
-- [ ] Ajustar los tests que importan mocks (mockear los services con `vi.fn`).
-- [ ] Nuevos: login ok/401, restaurar sesión con `/me`, sesión expirada, `ProtectedRoute` mientras carga y por rol, 409 en formularios.
-- [ ] `npm run lint`, `npm test` y `npm run build` en verde.
+- [x] Ajustar los tests que importan mocks (mockear los services con `vi.fn`).
+- [x] Nuevos: login ok/401, restaurar sesión con `/me`, sesión expirada, `ProtectedRoute` mientras carga y por rol, checkout (ok, 409, sin sesión, staff), CRUD admin, 409 en formularios, dashboard y cambio de estado.
+- [x] Prueba de contrato manual contra el backend real (servicios + `buildProduct`/`productToForm`/`buildUser`): pasó completa.
+- [x] `npm run lint`, `npm test` y `npm run build` en verde.
 
 ## 8. Pruebas y documentación (entregables)
 
