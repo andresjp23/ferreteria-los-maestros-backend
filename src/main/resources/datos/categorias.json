@@ -1,0 +1,38 @@
+[
+  {
+    "id": "materiales-construccion",
+    "nombre": "Materiales de construcción"
+  },
+  {
+    "id": "herramientas",
+    "nombre": "Herramientas"
+  },
+  {
+    "id": "gasfiteria",
+    "nombre": "Gasfitería"
+  },
+  {
+    "id": "electricidad",
+    "nombre": "Electricidad"
+  },
+  {
+    "id": "pinturas",
+    "nombre": "Pinturas"
+  },
+  {
+    "id": "tornilleria",
+    "nombre": "Tornillería"
+  },
+  {
+    "id": "madera",
+    "nombre": "Madera"
+  },
+  {
+    "id": "seguridad",
+    "nombre": "Seguridad"
+  },
+  {
+    "id": "jardin",
+    "nombre": "Jardín"
+  }
+]

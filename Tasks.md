@@ -98,14 +98,15 @@ Todo bajo `http://localhost:8080/api`.
 | --- | --- | --- | --- |
 | `POST /auth/login` | público | `AuthProvider.login` | obligatorio |
 | `GET /auth/me` | autenticado | restaurar la sesión al recargar | obligatorio |
-| `GET /categorias` | público | filtros, inicio, formulario | obligatorio |
-| `GET /marcas` | público | filtros, datalist | obligatorio |
-| `GET /productos` | público | catálogo, carrito, admin | obligatorio |
-| `GET /productos/{id}` | público | detalle | obligatorio |
-| `GET /productos/unidades` | admin | select de unidad | obligatorio |
-| `POST /productos` | admin | Agregar producto | obligatorio |
-| `PUT /productos/{id}` | admin | Editar producto | obligatorio |
-| `DELETE /productos/{id}` | admin | Eliminar producto | obligatorio |
+| `GET /categorias` | público | filtros, inicio, formulario | ✅ hecho |
+| `GET /marcas` | público | filtros, datalist | ✅ hecho |
+| `GET /productos` | público | catálogo, carrito (sin `precioCompra`) | ✅ hecho |
+| `GET /productos/{id}` | público | detalle | ✅ hecho |
+| `GET /unidades` | público | select de unidad | ✅ hecho |
+| `GET /admin/productos` · `GET /admin/productos/{id}` | admin | tabla y edición (incluye `precioCompra`) | ✅ hecho |
+| `POST /admin/productos` | admin | Agregar producto | ✅ hecho |
+| `PUT /admin/productos/{id}` | admin | Editar producto | ✅ hecho |
+| `DELETE /admin/productos/{id}` | admin | Eliminar producto | ✅ hecho |
 | `GET /usuarios` | admin | tabla de usuarios | obligatorio |
 | `GET /usuarios/{id}` | admin | editar | obligatorio |
 | `POST /usuarios` | admin | Agregar usuario | obligatorio |
@@ -119,6 +120,8 @@ Todo bajo `http://localhost:8080/api`.
 | `GET /pedidos/mios` | cliente | "Mis pedidos" (pantalla nueva) | mejora |
 | `POST /productos/{id}/imagen` | admin | campo imagen del formulario | mejora |
 | `POST /contacto` · `GET /contacto` | público · admin | formulario de contacto | mejora |
+
+**Decisión (catálogo):** el precio de compra es un dato interno, así que el catálogo público (`/api/productos`) no lo expone. La gestión completa vive en `/api/admin/productos`, que la seguridad protege con la regla `/api/admin/** → admin`. El cuerpo de POST/PUT usa los nombres del formulario (`codigo`, `precioVenta`…) para que cada error caiga en su campo; la respuesta usa los nombres que leen las vistas (`id`, `precio`, `image`).
 
 **Modelo:** `Categoria` 1–N `Producto` · `Usuario` 1–N `Pedido` · `Pedido` 1–N `DetallePedido` N–1 `Producto` (+ `MensajeContacto` si se hace).
 
@@ -142,7 +145,9 @@ Todo bajo `http://localhost:8080/api`.
 - [x] Swagger en `/swagger-ui.html` con título y descripción (`OpenApiConfig`).
 - [x] CORS global para `http://localhost:5173` (`CorsConfig`; se mueve a `SecurityConfig` en la sección 6).
 - [x] Quitar el `/api/salud` de la plantilla.
+- [x] Entidades JPA del catálogo (`Categoria`, `Producto`). Faltan las de usuarios y pedidos.
 - [ ] Entidades JPA con sus restricciones (`@Column(unique, nullable, length)`, relaciones `@ManyToOne` / `@OneToMany`).
+- [x] `DatosIniciales` (`CommandLineRunner`) con `resources/datos/categorias.json` y `productos.json` (generados desde los mocks).
 - [ ] Datos iniciales idempotentes (`CommandLineRunner` que solo inserta si la tabla está vacía) con los mocks completados (sección 0).
 - [ ] `ddl-auto=update` en desarrollo; documentar cómo reiniciar la BD (`docker compose down -v`).
 
@@ -157,18 +162,19 @@ Todo bajo `http://localhost:8080/api`.
 
 ## 5. Módulos
 
-### 5.1 Catálogo (primer módulo: es público y lo usan casi todas las pantallas)
+### 5.1 Catálogo ✅ (2026-11-06, 18 tests: 8 unitarios + 9 de integración + arranque)
 
-- [ ] `Categoria`: `id` (slug), `nombre`.
-- [ ] `Producto`: `codigo` (PK, `^[A-Z]{2}\d{3}$`), `nombre` (3–80, con letra), `categoria` (FK), `subcategoria` (2–40), `marca` (2–30), `unidad`, `precioCompra` y `precio` (enteros 1–9.999.999), `stock` y `stockMinimo` (0–100.000), `descripcion` (≤ 120), `imagen` (URL), `activo`.
-- [ ] `GET /api/productos` → lista de productos activos (el catálogo actual tiene 76 y el frontend filtra y ordena en el cliente). Opcional: aceptar `?categoria=` para los relacionados.
-- [ ] `GET /api/productos/{id}` → 404 si no existe o está inactivo.
-- [ ] `GET /api/categorias`, `GET /api/marcas` (`SELECT DISTINCT marca` ordenado), `GET /api/productos/unidades`.
-- [ ] `POST /api/productos` (admin). Recibe lo que produce `buildProduct`: `id`, `nombre`, `categoria`, `subcategoria`, `marca`, `unidad`, `precio`, `precioCompra`, `stock`, `stockMinimo`, `descripcion`. **Regla:** `precio ≥ precioCompra` (400 en `precioVenta`); 409 en `codigo` si ya existe; 400 si la categoría no existe.
-- [ ] `PUT /api/productos/{id}` (admin): mismas reglas; el código no se cambia.
-- [ ] `DELETE /api/productos/{id}` (admin): soft delete (`activo=false`) para no romper pedidos antiguos → 204.
-- [ ] `estadoStock` en la respuesta: `Sin stock` si stock = 0, `Bajo stock` si stock ≤ stockMinimo, `En stock` si no.
-- [ ] Semilla: 9 categorías y 76 productos (las imágenes siguen en `frontend/public/products`; `image` guarda la ruta `/products/…`).
+- [x] `Categoria`: `id` (slug), `nombre`.
+- [x] `Producto`: `codigo` (PK, `^[A-Z]{2}\d{3}$`), `nombre` (3–80, con letra), `categoria` (FK), `subcategoria` (2–40), `marca` (2–30), `unidad`, `precioCompra` y `precio` (enteros 1–9.999.999), `stock` y `stockMinimo` (0–100.000), `descripcion` (≤ 120), `imagen` (URL), `activo`.
+- [x] `GET /api/productos` → lista de productos activos (el catálogo actual tiene 76 y el frontend filtra y ordena en el cliente). Opcional: aceptar `?categoria=` para los relacionados.
+- [x] `GET /api/productos/{id}` → 404 si no existe o está inactivo.
+- [x] `GET /api/categorias`, `GET /api/marcas` y `GET /api/unidades` (`SELECT DISTINCT` de productos activos).
+- [x] `GET /api/admin/productos` y `/{id}` (admin, con `precioCompra`).
+- [x] `POST /api/admin/productos` (admin). Recibe los campos del formulario: `codigo`, `nombre`, `categoria`, `subcategoria`, `marca`, `unidad`, `precioCompra`, `precioVenta`, `stock`, `stockMinimo`, `descripcion`, `imagen` (URL opcional). **Regla:** `precio ≥ precioCompra` (400 en `precioVenta`); 409 en `codigo` si ya existe; 400 si la categoría no existe.
+- [x] `PUT /api/admin/productos/{id}` (admin): mismas reglas; el código no se cambia.
+- [x] `DELETE /api/admin/productos/{id}` (admin): soft delete (`activo=false`) para no romper pedidos antiguos → 204.
+- [x] `estadoStock` en la respuesta: `Sin stock` si stock = 0, `Bajo stock` si stock ≤ stockMinimo, `En stock` si no.
+- [x] Semilla: 9 categorías y 76 productos (las imágenes siguen en `frontend/public/products`; `image` guarda la ruta `/products/…`).
 
 ### 5.2 Usuarios y autenticación
 
@@ -210,12 +216,12 @@ Todo bajo `http://localhost:8080/api`.
 - [ ] `JwtAuthFilter` (`OncePerRequestFilter`): lee `Authorization: Bearer …` y carga el `SecurityContext`. Si el token es inválido o expiró → 401 JSON con `mensaje: "Sesión expirada o inválida"`.
 - [ ] `SecurityConfig`: `STATELESS`, CSRF desactivado, CORS desde la configuración, `BCryptPasswordEncoder`, `AuthenticationEntryPoint` (401) y `AccessDeniedHandler` (403) con el formato de error uniforme.
 - [ ] Reglas:
-  - [ ] Público: `POST /api/auth/login`, `GET /api/productos/**` (salvo `/unidades`), `GET /api/categorias`, `GET /api/marcas`, Swagger (`/swagger-ui/**`, `/v3/api-docs/**`), `POST /api/contacto`.
+  - [ ] Público: `POST /api/auth/login`, `GET /api/productos/**`, `GET /api/categorias`, `GET /api/marcas`, `GET /api/unidades`, Swagger (`/swagger-ui/**`, `/v3/api-docs/**`), `POST /api/contacto`.
   - [ ] Autenticado: `GET /api/auth/me`.
   - [ ] cliente: `POST /api/pedidos`, `GET /api/pedidos/mios`.
   - [ ] vendedor o admin: `GET /api/pedidos/**`; solo vendedor: `PATCH /api/pedidos/*/estado`.
-  - [ ] admin: `POST/PUT/DELETE /api/productos/**`, `GET /api/productos/unidades`, `/api/usuarios/**`, `/api/admin/**`, `GET /api/contacto`.
-- [ ] Probar y dejar evidencia: sin token → 401, cliente en `/api/usuarios` → 403, vendedor en `POST /api/productos` → 403, token expirado → 401.
+  - [ ] admin: `/api/admin/**` (incluye productos y resumen), `/api/usuarios/**`, `GET /api/contacto`.
+- [ ] Probar y dejar evidencia: sin token → 401, cliente en `/api/usuarios` → 403, vendedor en `POST /api/admin/productos` → 403, token expirado → 401.
 
 ## 7. Cambios en el frontend
 
@@ -249,8 +255,8 @@ Todo bajo `http://localhost:8080/api`.
 
 - [ ] Dashboard: `GET /admin/resumen`; quitar los valores fijos y las tendencias inventadas.
 - [ ] `RecentOrders`: `GET /pedidos?limit=5`.
-- [ ] Productos: tabla desde el API; Agregar → `POST`; **Editar** (abre `AddProductForm` con los datos, el código bloqueado) → `PUT`; **Eliminar** (confirmación) → `DELETE`; refrescar la lista y mostrar los errores 400/409 por campo.
-- [ ] `AddProductForm`: categorías, marcas y unidades del API.
+- [ ] Productos: tabla desde `GET /admin/productos`; Agregar → `POST /admin/productos`; **Editar** (abre `AddProductForm` con los datos, el código bloqueado) → `PUT`; **Eliminar** (confirmación) → `DELETE`; refrescar la lista y mostrar los errores 400/409 por campo.
+- [ ] `AddProductForm`: categorías, marcas y unidades del API. Si no se sube imagen, el producto queda con `image: null` → mostrar una imagen por defecto en `ProductCard` y en el detalle.
 - [ ] Usuarios: tabla desde el API; Agregar → `POST` con la contraseña; **Editar** (contraseña opcional) → `PUT`; **Eliminar/Desactivar** → `DELETE`.
 - [ ] `productValidation.js` / `userValidations.js`: quitar la unicidad contra los mocks (la valida el backend con 409).
 - [ ] Borrar `mocks/products.js`, `categories.js`, `brands.js` y `adminUsers.js`.
