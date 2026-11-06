@@ -226,31 +226,33 @@ Todo bajo `http://localhost:8080/api`.
 
 ## 7. Cambios en el frontend
 
-### 7.1 Cliente HTTP (IE3.2.2)
+### 7.1 Cliente HTTP (IE3.2.2) ✅
 
-- [ ] `frontend/.env.development` con `VITE_API_URL=http://localhost:8080/api` + `.env.example`.
-- [ ] `src/services/api.js`: URL base, JSON, `Authorization: Bearer`, error con `{ status, mensaje, campos }`, y ante un 401 con sesión → `logout` + aviso "Tu sesión expiró".
-- [ ] `authService`, `productService` (incluye categorías, marcas y unidades), `userService`, `orderService`, `adminService`.
-- [ ] Estados de carga y error en cada pantalla (`PageLoader`, `Notice`).
+- [x] `frontend/.env.development` con `VITE_API_URL=http://localhost:8080/api` + `.env.example`.
+- [x] `src/services/api.js`: URL base, JSON, `Authorization: Bearer`, error con `{ status, mensaje, campos }`, y ante un 401 con sesión → `logout` + aviso "Tu sesión expiró".
+- [x] `authService`, `catalogService` y `orderService` (checkout).
+- [ ] `adminService` / `userService` y el resto de `orderService` para los paneles (parte 2).
+- [x] Estados de carga y error en cada pantalla (`PageLoader`, `Notice`).
 
-### 7.2 Sesión y acceso (IE3.3.2 + IE3.3.3)
+### 7.2 Sesión y acceso (IE3.3.2 + IE3.3.3) ✅
 
-- [ ] `AuthProvider.login` → `POST /auth/login`; guardar `token` en `localStorage` (reemplaza `auth_user`).
-- [ ] Al iniciar: si hay token, `GET /auth/me` → restaura `user`; si falla, limpia. Exponer `loading` en el contexto.
-- [ ] `ProtectedRoute`: mientras `loading`, mostrar el loader (no redirigir antes de tiempo).
-- [ ] Token vencido: revisar `exp` al cargar y responder al 401 del backend → `/login` con el mensaje "Tu sesión expiró, vuelve a iniciar sesión" y la ruta de retorno guardada.
-- [ ] `logout` borra el token.
-- [ ] Acciones por rol: botones de checkout solo para clientes (los demás ven "Inicia sesión como cliente"), acciones de admin y del vendedor dentro de sus paneles.
-- [ ] `LoginForm`: reemplazar la lista generada desde `users.js` por las 3 cuentas demo escritas en el componente o en el README.
-- [ ] Borrar `mocks/users.js`.
+- [x] `AuthProvider.login` → `POST /auth/login`; guardar `token` en `localStorage` (reemplaza `auth_user`).
+- [x] Al iniciar: si hay token, `GET /auth/me` → restaura `user`; si falla, limpia. Exponer `loading` en el contexto.
+- [x] `ProtectedRoute`: mientras `loading`, mostrar el loader (no redirigir antes de tiempo).
+- [x] Token vencido: revisar `exp` al cargar y responder al 401 del backend → `/login` con el mensaje "Tu sesión expiró, vuelve a iniciar sesión" y la ruta de retorno guardada.
+- [x] `logout` borra el token.
+- [x] Checkout solo para clientes (admin y vendedor ven el botón deshabilitado con la explicación; sin sesión, lleva al login y vuelve al carrito).
+- [ ] Acciones de admin y del vendedor dentro de sus paneles (parte 2).
+- [x] `LoginForm`: reemplazar la lista generada desde `users.js` por las 3 cuentas demo escritas en el componente o en el README.
+- [x] Borrar `mocks/users.js`.
 
-### 7.3 Catálogo, detalle y carrito
+### 7.3 Catálogo, detalle y carrito ✅
 
-- [ ] Contexto o hook `useCatalog` que pide `GET /productos` y `GET /categorias` una vez; lo usan `Products`, `ProductDetail`, `CategoriesSection`, `CartProvider` y `utils/catalog.js`.
-- [ ] `FiltersSidebar`: categorías y marcas del API.
-- [ ] `ProductDetail`: 404 → "Producto no encontrado"; relacionados desde el catálogo cargado.
-- [ ] `utils/stock.js`: usar `estadoStock` del backend.
-- [ ] `CartSummary`: habilitar "Continuar con la compra" → si no hay sesión de cliente, ir a `/login`; si la hay, `POST /pedidos` → vaciar el carrito → confirmación con el n° de pedido; mostrar el 409 de stock.
+- [x] `CatalogProvider` + `useCatalog`: pide productos, categorías y marcas una vez; lo usan `Products`, `ProductDetail`, `CategoriesSection`, `FiltersSidebar` y `CartProvider`. `utils/catalog.js` queda solo para el admin hasta la parte 2.
+- [x] `FiltersSidebar`: categorías y marcas del API.
+- [x] `ProductDetail`: 404 → "Producto no encontrado"; relacionados desde el catálogo cargado.
+- [ ] `utils/stock.js`: usar `estadoStock` del backend (lo usa la tabla del admin, parte 2).
+- [x] `CartSummary`: habilitar "Continuar con la compra" → si no hay sesión de cliente, ir a `/login`; si la hay, `POST /pedidos` → vaciar el carrito → confirmación con el n° de pedido; mostrar el 409 de stock.
 
 ### 7.4 Panel admin
 
