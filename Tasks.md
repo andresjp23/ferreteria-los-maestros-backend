@@ -282,7 +282,7 @@ Todo bajo `http://localhost:8080/api`.
 ## 8. Pruebas y documentación (entregables)
 
 - [x] ~~Más tests backend~~: no los exige la rúbrica (solo documentar pruebas de integración); quedan los 55 existentes. Detalle original: (perfil `test`, H2): services con JUnit 5 + Mockito (precio ≥ costo, 409 duplicados, transición de estados, stock en el checkout, admin que se borra a sí mismo) y controllers con MockMvc (validación 400, 401 sin token, 403 por rol).
-- [x] **Documento de integración** (`docs/documento-integracion.md`, entregable; 2026-11-11, pruebas P01–P23 con capturas en `docs/capturas/`): arquitectura, flujo React → `api.js` → controller → service → repository → MySQL, tabla de endpoints con permisos, flujo del JWT y de la sesión, y la tabla de pruebas de integración (caso, pasos, esperado, obtenido, captura).
+- [x] **Documento de integración** (`docs/documento-integracion.md`, entregable; 2026-11-11, pruebas P01–P23 con capturas en `docs/capturas/`): arquitectura, flujo React → `api.js` → controller → service → repository → MySQL, tabla de endpoints con permisos, flujo del JWT y de la sesión, y la tabla de pruebas de integración (caso, pasos, esperado, obtenido, captura). **2026-11-13:** se sacó del repositorio junto con sus capturas, porque se entrega en el examen y no en la EP3.
 - [ ] **Manual de usuario con pantallazos** (entregable): cómo instalar y levantar, y paso a paso por rol (visitante, cliente, vendedor, admin).
 - [x] ~~Colección Postman o `.http`~~: descartada, las pruebas se hicieron en Swagger.
 - [ ] README raíz y `backend/README.md`: requisitos, `.env`, BD, orden de arranque (MySQL → backend → frontend), Swagger, cuentas demo.

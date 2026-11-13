@@ -2,11 +2,7 @@
 
 ## Documento de apoyo para la defensa técnica (EP3)
 
-Este documento explica cómo está construido el backend y dónde está cada parte en el código, organizado según los indicadores de la defensa técnica. Complementa a:
-
-- el [documento de integración](documento-integracion.md): arquitectura, diagramas, endpoints, manejo de errores y pruebas P01–P23 con capturas;
-- el [documento del frontend](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/documento-ferreteria-los-maestros.md): flujo de integración, sesión y control de acceso del lado de React;
-- el [manual de usuario](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/manual-usuario.md).
+Este documento explica cómo está construido el backend y dónde está cada parte en el código, organizado según los indicadores de la defensa técnica. Complementa al [documento del frontend](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/documento-ferreteria-los-maestros.md), que cubre el flujo de integración, la sesión y el control de acceso del lado de React.
 
 Las referencias `archivo:línea` son relativas a `src/main/java/cl/losmaestros/ferreteria/`.
 
@@ -68,7 +64,13 @@ Petición HTTP → JwtAuthFilter → SecurityConfig (¿rol permitido?) → Contr
 | `Pedido` | `pedidos` | `@ManyToOne` a `Usuario` (el cliente); `@OneToMany` a sus detalles con `cascade = ALL` (`model/Pedido.java:44`) |
 | `DetallePedido` | `detalles_pedido` | `@ManyToOne` a `Pedido` y a `Producto`. Guarda el **nombre y el precio al momento de la compra** |
 
-El diagrama entidad-relación está en el [documento de integración, sección 2](documento-integracion.md#2-arquitectura).
+```mermaid
+erDiagram
+    CATEGORIAS ||--o{ PRODUCTOS : agrupa
+    USUARIOS ||--o{ PEDIDOS : realiza
+    PEDIDOS ||--|{ DETALLES_PEDIDO : contiene
+    PRODUCTOS ||--o{ DETALLES_PEDIDO : "aparece en"
+```
 
 **Decisiones que conviene saber justificar:**
 - **El detalle copia nombre y precio:** si mañana sube el precio del cemento, los pedidos antiguos siguen mostrando lo que se pagó.
@@ -88,7 +90,18 @@ El precio y el total **los calcula el servidor**. El navegador solo envía `id` 
 
 **Otra regla, el estado del pedido:** `PedidoService.cambiarEstado` (`:97`) usa `EstadoPedido.siguiente()` (`model/EstadoPedido.java:25`) para permitir solo el paso siguiente: En preparación → Enviado → Entregado. Cualquier otro cambio responde 400.
 
-Otras reglas (correo único, no eliminar la propia cuenta, no eliminar usuarios con pedidos) están en la tabla de la [sección 3 del documento de integración](documento-integracion.md#3-componentes-del-backend).
+**Todas las reglas de negocio:**
+
+| Regla | Dónde | Respuesta si no se cumple |
+| --- | --- | --- |
+| El precio de venta no puede ser menor que el de compra | `ProductoService` | 400 en `precioVenta` |
+| El código de producto y el correo de usuario son únicos | `ProductoService`, `UsuarioService` | 409 |
+| El checkout valida y descuenta el stock en una sola transacción, con los productos bloqueados | `PedidoService.crear` | 409 «Stock insuficiente…» |
+| El precio y el total del pedido los calcula el servidor | `PedidoService.crear` | — |
+| El estado de un pedido solo avanza un paso | `PedidoService.cambiarEstado` | 400 |
+| El admin no puede eliminar ni desactivar su propia cuenta, ni quitarse el rol de admin | `UsuarioService` | 400 |
+| Un usuario con pedidos no se puede eliminar (se desactiva) | `UsuarioService.eliminar` | 409 |
+| Las contraseñas se guardan con BCrypt y nunca se devuelven en las respuestas | `UsuarioService`, DTOs | — |
 
 **Preguntas probables:**
 - *¿Por qué `@Transactional(readOnly = true)` en la clase y `@Transactional` en los métodos que escriben?* Las lecturas no necesitan bloquear ni hacer *flush*; las escrituras sí necesitan su transacción.
@@ -111,7 +124,7 @@ Otras reglas (correo único, no eliminar la propia cuenta, no eliminar usuarios 
 | Editar | `PUT /api/admin/productos/{codigo}` | 200 | 400, 404 |
 | Eliminar | `DELETE /api/admin/productos/{codigo}` | **204 No Content** | 404 |
 
-También hay CRUD de usuarios (`/api/usuarios`) y la creación y el cambio de estado de pedidos (`/api/pedidos`). La tabla completa está en el [documento de integración, sección 6](documento-integracion.md#6-endpoints-y-permisos).
+También hay CRUD de usuarios (`/api/usuarios`) y la creación y el cambio de estado de pedidos (`/api/pedidos`). La tabla de rutas y permisos está en el [README](../README.md#autenticación-y-permisos), y todos los endpoints están en Swagger.
 
 ### 3.2 Demostración en Swagger: `POST /api/admin/productos`
 
@@ -122,7 +135,7 @@ También hay CRUD de usuarios (`/api/usuarios`) y la creación y el cambio de es
    - **Entrada:** JSON con `codigo`, `nombre`, `categoria`, precios, stock… validado por `ProductoRequest`.
    - **Respuesta 201** con el producto creado y el header `Location: /api/admin/productos/{codigo}`.
    - **Errores documentados** con `@ApiResponse` en el controlador (`AdminProductoController.java:52-57`): 400 si los datos son inválidos o el precio de venta es menor, 409 si el código ya existe.
-4. Mostrar los errores en vivo: el mismo código otra vez → **409** (P12); precio de venta menor → **400** con `campos.precioVenta` (P13); sin token → **401**; con el token del vendedor → **403** (P15).
+4. Mostrar los errores en vivo: el mismo código otra vez → **409**; precio de venta menor → **400** con `campos.precioVenta`; sin token → **401**; con el token del vendedor → **403**.
 
 ### 3.3 Manejo de errores
 
@@ -154,7 +167,7 @@ Los 401 y 403 de seguridad (sin token o sin rol) los responde `security/RestAuth
 
 ## 4. IE3.2.4 · Flujo de integración (lado del servidor)
 
-El recorrido completo, desde el clic en React, está en el [documento del frontend, sección 9.1](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/documento-ferreteria-los-maestros.md#91-ie324--flujo-de-integración-frontendbackend), y en el diagrama de secuencia del [documento de integración, sección 5](documento-integracion.md#5-flujo-de-una-petición-rest-el-checkout). Del lado del servidor:
+El recorrido completo, desde el clic en React, está en el [documento del frontend, sección 9.1](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/documento-ferreteria-los-maestros.md#91-ie324--flujo-de-integración-frontendbackend). Del lado del servidor:
 
 | Paso | Dónde |
 | --- | --- |
@@ -195,7 +208,7 @@ Reglas de `SecurityConfig.java`:
 
 **Por qué el rol se toma de la BD y no del token:** si el admin desactiva una cuenta o le cambia el rol, el cambio aplica en la siguiente petición, aunque el token siga vigente. Es una consulta por petición a cambio de no poder seguir usando un token "viejo".
 
-**Demostración:** en Swagger, `GET /api/usuarios` sin token → 401 (P08); con token de cliente → 403 (P09); con token de admin → 200 (P10). Para el token alterado: cambiar un carácter → 401 "Sesión inválida" (P07).
+**Demostración:** en Swagger, `GET /api/usuarios` sin token → 401; con token de cliente → 403; con token de admin → 200. Para el token alterado: cambiar un carácter → 401 "Sesión inválida".
 
 **Preguntas probables:**
 - *¿Qué es HS256?* Firma HMAC con SHA-256 y una clave secreta compartida. Quien no tiene la clave no puede crear ni modificar un token válido. El contenido no está cifrado (es Base64), por eso el token no lleva datos sensibles.
@@ -207,7 +220,7 @@ Reglas de `SecurityConfig.java`:
 ## 6. IE3.3.5 · Sesión (lado del servidor)
 
 - **Sin estado en el servidor:** `sessionCreationPolicy(STATELESS)` (`config/SecurityConfig.java:38`). El backend no guarda sesiones: toda la información viaja en el token, y por eso cualquier petición se puede atender sin "recordar" al usuario.
-- **Restaurar la sesión al recargar:** el frontend llama a `GET /api/auth/me` (`controller/AuthController.java:48`), que devuelve el usuario del token, leído desde la BD (`AuthService.usuarioActual`, `:56`). Prueba P06.
+- **Restaurar la sesión al recargar:** el frontend llama a `GET /api/auth/me` (`controller/AuthController.java:48`), que devuelve el usuario del token, leído desde la BD (`AuthService.usuarioActual`, `:56`). Se puede probar en Swagger con el token de cualquier usuario.
 - **Vencimiento:** `exp` = ahora + `JWT_EXPIRATION_MINUTES` (60 por defecto). Con un token vencido, el filtro marca el motivo (`JwtAuthFilter.java:60-61`) y `RestAuthHandlers` responde 401 "Tu sesión expiró. Inicia sesión nuevamente". El frontend recibe ese 401 y cierra la sesión.
 - **Demostración de expiración:** levantar con `JWT_EXPIRATION_MINUTES=1`, iniciar sesión y esperar un minuto.
 
@@ -225,7 +238,7 @@ El frontend oculta botones y protege rutas, pero corre en el navegador del usuar
 | El admin no puede eliminarse, desactivarse ni quitarse el rol de admin | `service/UsuarioService.java:66` y `:92` (reciben `idActual`) |
 | Un usuario desactivado deja de poder usar su token | `JwtAuthFilter.java:52-53` |
 
-Las pruebas P09, P15, P19 y P22 muestran el 403 con un token válido del rol equivocado.
+Para demostrarlo: con un token válido del rol equivocado (por ejemplo, el del cliente en `GET /api/usuarios`, o el del vendedor en `POST /api/admin/productos`), la API responde 403.
 
 ---
 
@@ -262,7 +275,16 @@ Los tests de `controller/` usan **MockMvc**: envían peticiones HTTP reales a la
 | Bloqueo pesimista en el checkout | `SELECT … FOR UPDATE` | Evita vender dos veces el último producto. La alternativa es el bloqueo optimista con `@Version` y reintentos |
 | Rol leído de la BD en cada petición | Una consulta extra | A cambio, desactivar una cuenta o cambiarle el rol aplica de inmediato |
 
-Las limitaciones conocidas (código de producto eliminado no reutilizable, JWT en `localStorage`, sin *refresh token*, sin revocación de tokens, imagen como ruta, solo HTTP local) están explicadas con su mejora en el [documento de integración, sección 11](documento-integracion.md#11-limitaciones-y-mejoras-posibles).
+**Limitaciones conocidas:**
+
+| Limitación | Por qué ocurre | Mejora posible |
+| --- | --- | --- |
+| Un código de producto eliminado no se puede reutilizar: crear otro con ese código da 409, pero consultarlo da 404 | La eliminación desactiva el producto para conservar los pedidos, pero el código sigue ocupado | Reactivar el producto al crear uno con el mismo código, o avisar «existe un producto eliminado con este código» |
+| El JWT se guarda en `localStorage` | Simple y conserva la sesión al recargar, pero un script inyectado (XSS) podría leerlo | Cookie `HttpOnly` + `SameSite`, o token corto con *refresh token* |
+| No hay *refresh token* | Se priorizó la simplicidad | Endpoint `/auth/refresh` |
+| No se puede revocar un token antes de que venza | Los JWT son *stateless*. Igual, si se desactiva el usuario, su token deja de servir, porque el filtro lo busca en la BD | Lista de tokens revocados o vencimientos más cortos |
+| La imagen del producto es una ruta o URL | La subida de archivos quedó fuera del alcance | Subida *multipart* guardando el archivo en disco o en un almacenamiento de objetos |
+| Funciona solo en local, por HTTP | La EP3 no exige despliegue | Desplegar con HTTPS y definir `CORS_ORIGINS` y `JWT_SECRET` por entorno |
 
 ---
 

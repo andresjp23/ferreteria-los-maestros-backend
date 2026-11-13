@@ -105,7 +105,5 @@ Las demás cuentas de ejemplo usan la contraseña `Maestros2026`. Son credencial
 
 ## Documentación
 
-- [Documento de integración frontend–backend](docs/documento-integracion.md): arquitectura, componentes, flujo REST del checkout, endpoints, JWT, manejo de errores, configuración y las pruebas de integración P01–P23 con sus capturas.
-- [Manual de usuario](https://github.com/andresjp23/ferreteria-los-maestros-frontend/blob/main/docs/manual-usuario.md) (en el repositorio del frontend): instalación y uso paso a paso por rol, con capturas.
 - [Documento de apoyo para la defensa técnica](docs/documento-defensa-backend.md): entidades, servicios, Swagger, JWT y permisos, con la ubicación de cada parte en el código.
 - [`Tasks.md`](Tasks.md): plan de trabajo y estado de cada tarea del backend.
